@@ -1,10 +1,10 @@
 package com.gads.gbolahan.gadsleaderboard;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
+import androidx.appcompat.widget.Toolbar;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,8 +12,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import com.gads.gbolahan.gadsleaderboard.retro.SubmissionDetails;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -27,6 +25,16 @@ public class SubmissionActivity extends AppCompatActivity {
     protected void onCreate (final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_submission);
+
+        /*assert getSupportActionBar() != null;
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);*/
+
+        Toolbar toolbar = findViewById(R.id.gads_toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar ab = getSupportActionBar();
+        ab.setDisplayHomeAsUpEnabled(true);
+        ab.setDisplayShowTitleEnabled(false);
 
         Button submitButton = findViewById(R.id.button_submit_project);
         submitButton.setOnClickListener(new View.OnClickListener() {
@@ -51,6 +59,7 @@ public class SubmissionActivity extends AppCompatActivity {
             @Override
             public void onClick (View v) {
                 submitProject();
+                alertDialog.dismiss();
             }
         });
 
@@ -94,23 +103,26 @@ public class SubmissionActivity extends AppCompatActivity {
         String emailAddress = textEmailAddress.getText().toString();
         String link = textProjectLink.getText().toString();
 
-        Call<SubmissionDetails> call = mAPIInterface.submit(firstName, lastName, emailAddress, link);
-        call.enqueue(new Callback<SubmissionDetails>() {
+        Call<Void> call = mAPIInterface.submitProject(firstName, lastName, emailAddress, link);
+        call.enqueue(new Callback<Void>() {
             @Override
-            public void onResponse (Call<SubmissionDetails> call, Response<SubmissionDetails> response) {
+            public void onResponse (Call<Void> call, Response<Void> response) {
                 if(response.isSuccessful()) {
-                    Log.e("Response", String.valueOf(response.code()));
+                    Toast.makeText(getBaseContext(), "Successful", Toast.LENGTH_LONG).show();
+                    Log.e("PostResponse", String.valueOf(response.code()));
                     successDialog();
                 } else {
-                    Log.e("Response", String.valueOf(response.code()));
+                    Toast.makeText(getBaseContext(), "Something went wrong...Please try later!", Toast.LENGTH_LONG).show();
+                    Log.e("PostFailedResponse", String.valueOf(response.code()));
+                    errorDialog();
                 }
             }
 
             @Override
-            public void onFailure (Call<SubmissionDetails> call, Throwable t) {
-                Log.e("error", t.getMessage());
-                Toast.makeText(getBaseContext(), "Something went wrong...Please try later!", Toast.LENGTH_LONG).show();
-                t.printStackTrace();
+            public void onFailure (Call<Void> call, Throwable t) {
+                Log.e("PostFailureError", t.getMessage());
+                Toast.makeText(getBaseContext(), "Something went wrong...Failed!", Toast.LENGTH_LONG).show();
+                // t.printStackTrace();
                 errorDialog();
             }
         });

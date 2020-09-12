@@ -3,19 +3,19 @@ package com.gads.gbolahan.gadsleaderboard.retro;
 import com.google.gson.annotations.SerializedName;
 
 public class SubmissionDetails {
-    @SerializedName("name")
+    @SerializedName("entry.1877115667")
     public String firstName;
-    @SerializedName("lastName")
+    @SerializedName("entry.2006916086")
     public String lastName;
-    @SerializedName("emailAddress")
+    @SerializedName("entry.1824927963")
     public String emailAddress;
-    @SerializedName("link")
-    public String link;
+    @SerializedName("entry.284483984")
+    public String projectLink;
 
-    public SubmissionDetails (String firstName, String lastName, String emailAddress, String link) {
+    public SubmissionDetails (String firstName, String lastName, String emailAddress, String projectLink) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.emailAddress = emailAddress;
-        this.link = link;
+        this.projectLink = projectLink;
     }
 }
